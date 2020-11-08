@@ -164,8 +164,8 @@ app.post("/end-game", (req, res) => {
   fs.unlink(`games/${req.body.gameNumber}.json`, () => res.end('ok'));
 });
 
-app.listen(80, () => {
-  console.log("Listening on localhost:80");
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server started.");
 });
 
 function getBulls(number, tryNumber) {
