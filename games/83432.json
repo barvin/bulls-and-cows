@@ -1,0 +1,21 @@
+{
+    "startTime": "2020-11-06T09:06:13.726Z",
+    "players": [
+        {
+            "sessionID": "e7e27a86-a6c9-4955-8149-9829d5b79392",
+            "number": "9521",
+            "moves": [
+                {
+                    "tryNumber": "1234",
+                    "bulls": 1,
+                    "cows": 1
+                }
+            ]
+        },
+        {
+            "sessionID": "d693f3cf-374c-4e60-b409-422408b32ea8",
+            "number": "3074",
+            "moves": []
+        }
+    ]
+}

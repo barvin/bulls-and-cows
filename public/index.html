@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Бики і корови</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+      integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container-fluid pt-3">
+      <h1>Бики і корови</h1>
+      <div id="game-container">
+        <div id="start-game-container">
+          <button id="btn-new-game" type="button" class="btn btn-primary btn-lg mt-4 mb-3">Почати нову гру</button>
+          <h4>або</h4>
+          <div class="input-group input-group-lg pt-4">
+            <input
+              id="input-game-number"
+              type="text"
+              class="form-control col-2"
+              placeholder="Номер гри"
+              aria-label="Game number"
+              aria-describedby="btn-new-game"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-secondary" type="button" id="btn-join-game">Приєднатись до гри</button>
+            </div>
+          </div>
+        </div>
+        <div id="game-number-container"></div>
+        <div id="guessed-number-container"></div>
+        <div id="current-move-container" class="pt-4"></div>
+        <div id="my-moves-container"></div>
+        <div id="opponent-moves-container"></div>
+      </div>
+    </div>
+    <script src="client.js"></script>
+  </body>
+</html>
