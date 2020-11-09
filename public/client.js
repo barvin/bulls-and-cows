@@ -55,21 +55,13 @@ function startGame(gameNumber, isNewGame) {
           }
           document.querySelector("#current-move-container").textContent = `Суперник ще не приєднався.`;
           return waitOpponentJoinStatus(gameNumber);
-        } else {
-          return response;
         }
+        return response;
       })
       .then((response) => {
         if (response.ok) {
           document.querySelector("#current-move-container").textContent = `Суперник ще не загадав число.`;
-          let resOpponentNumberStatus = getOpponentNumberStatus(gameNumber);
-          while (!resOpponentNumberStatus.ok) {
-            if (resOpponentNumberStatus.status !== 503) {
-              break;
-            }
-            resOpponentNumberStatus = getOpponentNumberStatus(gameNumber);
-          }
-          return resOpponentNumberStatus;
+          return waitOpponentNumberStatus(gameNumber);
         }
         return response;
       })
@@ -163,13 +155,7 @@ function makeMove(gameNumber, isPlayerFirst) {
 function waitForMove(gameNumber, isPlayerFirst) {
   document.querySelector("#active-move-container").style.display = "none";
   document.querySelector("#waiting-for-move-container").style.display = "block";
-  let response = getWaitForMoveResponse(gameNumber);
-  while (!response.ok) {
-    if (response.status !== 503) {
-      break;
-    }
-    response = getWaitForMoveResponse(gameNumber);
-  }
+  let response = waitForMoveResponse(gameNumber);
   if (response.ok) {
     response.json().then((data) => {
       document
@@ -191,37 +177,28 @@ function waitForMove(gameNumber, isPlayerFirst) {
   }
 }
 
-function getWaitForMoveResponse(gameNumber) {
-  return fetch("/wait-for-move", {
+async function waitForMoveResponse(gameNumber) {
+  let response = await fetch("/wait-for-move", {
     method: "POST",
     headers: { "Content-Type": "application/json;charset=utf-8" },
     body: `{"gameNumber": "${gameNumber}"}`,
   });
-}
-
-function endGame(gameNumber) {
-  let result;
-  if (myBulls === 4 && opponentBulls !== 4) {
-    result = `<span class="text-success">Ви виграли!!!</span>`;
-  } else if (opponentBulls === 4 && myBulls !== 4) {
-    result = `<span class="text-danger">Ви програли :(</span>`;
-  } else {
-    result = `<span class="text-warning">Нічия :)</span>`;
+  if (response.status < 500) {
+    return response;
   }
-  document.querySelector("#current-move-container").innerHTML = `<h3>${result}</h3>`;
-  fetch("/end-game", {
-    method: "POST",
-    headers: { "Content-Type": "application/json;charset=utf-8" },
-    body: `{"gameNumber": "${gameNumber}"}`,
-  });
+  return await waitForMoveResponse(gameNumber);
 }
 
-function getOpponentNumberStatus(gameNumber) {
-  return fetch("/opponent-number-status", {
+async function waitOpponentNumberStatus(gameNumber) {
+  let response = await fetch("/opponent-number-status", {
     method: "POST",
     headers: { "Content-Type": "application/json;charset=utf-8" },
     body: `{"gameNumber": "${gameNumber}"}`,
   });
+  if (response.status < 500) {
+    return response;
+  }
+  return await waitOpponentNumberStatus(gameNumber);
 }
 
 async function waitOpponentJoinStatus(gameNumber) {
@@ -240,4 +217,21 @@ function printError(message) {
   document
     .querySelector("body")
     .insertAdjacentHTML("beforeend", `<div class="alert alert-danger" role="alert">${message}</div>`);
+}
+
+function endGame(gameNumber) {
+  let result;
+  if (myBulls === 4 && opponentBulls !== 4) {
+    result = `<span class="text-success">Ви виграли!!!</span>`;
+  } else if (opponentBulls === 4 && myBulls !== 4) {
+    result = `<span class="text-danger">Ви програли :(</span>`;
+  } else {
+    result = `<span class="text-warning">Нічия :)</span>`;
+  }
+  document.querySelector("#current-move-container").innerHTML = `<h3>${result}</h3>`;
+  fetch("/end-game", {
+    method: "POST",
+    headers: { "Content-Type": "application/json;charset=utf-8" },
+    body: `{"gameNumber": "${gameNumber}"}`,
+  });
 }
