@@ -155,26 +155,27 @@ function makeMove(gameNumber, isPlayerFirst) {
 function waitForMove(gameNumber, isPlayerFirst) {
   document.querySelector("#active-move-container").style.display = "none";
   document.querySelector("#waiting-for-move-container").style.display = "block";
-  let response = waitForMoveResponse(gameNumber);
-  if (response.ok) {
-    response.json().then((data) => {
-      document
-        .querySelector("#opponent-moves-container tbody")
-        .insertAdjacentHTML(
-          "beforeend",
-          `<tr><td>${data.tryNumber}</td><td>${data.bulls}</td><td>${data.cows}</td></tr>`
-        );
-      opponentBulls = data.bulls;
-      if (isPlayerFirst && (myBulls === 4 || opponentBulls === 4)) {
-        endGame(gameNumber);
-      } else {
-        document.querySelector("#active-move-container").style.display = "block";
-        document.querySelector("#waiting-for-move-container").style.display = "none";
-      }
-    });
-  } else {
-    response.text().then((text) => printError(text));
-  }
+  waitForMoveResponse(gameNumber).then((response) => {
+    if (response.ok) {
+      response.json().then((data) => {
+        document
+          .querySelector("#opponent-moves-container tbody")
+          .insertAdjacentHTML(
+            "beforeend",
+            `<tr><td>${data.tryNumber}</td><td>${data.bulls}</td><td>${data.cows}</td></tr>`
+          );
+        opponentBulls = data.bulls;
+        if (isPlayerFirst && (myBulls === 4 || opponentBulls === 4)) {
+          endGame(gameNumber);
+        } else {
+          document.querySelector("#active-move-container").style.display = "block";
+          document.querySelector("#waiting-for-move-container").style.display = "none";
+        }
+      });
+    } else {
+      response.text().then((text) => printError(text));
+    }
+  });
 }
 
 async function waitForMoveResponse(gameNumber) {
