@@ -54,14 +54,7 @@ function startGame(gameNumber, isNewGame) {
             return response;
           }
           document.querySelector("#current-move-container").textContent = `Суперник ще не приєднався.`;
-          let resOpponentJoinStatus = getOpponentJoinStatus(gameNumber);
-          while (!resOpponentJoinStatus.ok) {
-            if (resOpponentJoinStatus.status !== 503) {
-              break;
-            }
-            resOpponentJoinStatus = getOpponentJoinStatus(gameNumber);
-          }
-          return resOpponentJoinStatus;
+          return waitOpponentJoinStatus(gameNumber);
         } else {
           return response;
         }
@@ -172,7 +165,7 @@ function waitForMove(gameNumber, isPlayerFirst) {
   document.querySelector("#waiting-for-move-container").style.display = "block";
   let response = getWaitForMoveResponse(gameNumber);
   while (!response.ok) {
-    if (response.status !==503) {
+    if (response.status !== 503) {
       break;
     }
     response = getWaitForMoveResponse(gameNumber);
@@ -231,12 +224,16 @@ function getOpponentNumberStatus(gameNumber) {
   });
 }
 
-function getOpponentJoinStatus(gameNumber) {
-  return fetch("/opponent-joined-status", {
+async function waitOpponentJoinStatus(gameNumber) {
+  let response = await fetch("/opponent-joined-status", {
     method: "POST",
     headers: { "Content-Type": "application/json;charset=utf-8" },
     body: `{"gameNumber": "${gameNumber}"}`,
   });
+  if (response.status < 500) {
+    return response;
+  }
+  return await waitOpponentJoinStatus(gameNumber);
 }
 
 function printError(message) {
