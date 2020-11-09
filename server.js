@@ -37,6 +37,9 @@ app.get("/game/new", (req, res) => {
   };
 
   let data = JSON.stringify(game);
+  if (!fs.existsSync("games")) {
+    fs.mkdirSync("games");
+  }
   fs.writeFile(`games/${gameNumber}.json`, data, () => res.end(gameNumber.toString()));
 });
 
